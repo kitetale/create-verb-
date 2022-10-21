@@ -42,26 +42,53 @@ while True:
         if len(lmList) != 0:
             fingers = []
 
+            #which hand
             print(detector.results.multi_handedness[handindex].classification[0].label)
+
+            # rotation of hand (0/180 or 90/-90)
+            x = 1
+            y = 2
+            distx = abs(lmList[2][x] - lmList[17][x])
+            disty = abs(lmList[2][y] - lmList[17][y])
+            if (distx < disty):
+                x = 2
+                y = 1
+                print("rotated 90")
+            else:
+                print("not rotated")
+
+            # horizontal orientation of hand 
+            rightHand = False
+            if lmList[17][x] > lmList[2][x]: rightHand = True
+
             # Thumb
-            # note camera is flipped so follow the comment for correct orientation of hands
-            if (detector.results.multi_handedness[handindex].classification[0].label == "Left"): #right hand
-                if lmList[tipIds[0]][1] > lmList[tipIds[0] - 1][1]:
+            if (rightHand): #right hand
+                if lmList[tipIds[0]][x] < lmList[tipIds[0] - 1][x]:
                     fingers.append(1)
                 else:
                     fingers.append(0)
             else : #left hand
-                if lmList[tipIds[0]][1] < lmList[tipIds[0] - 1][1]:
+                if lmList[tipIds[0]][x] > lmList[tipIds[0] - 1][x]:
                     fingers.append(1)
                 else:
                     fingers.append(0)
+            
+            # vertical orientation of hand
+            updir = True
+            if lmList[0][y] < lmList[9][y]: updir = False
 
             # 4 Fingers
             for id in range(1, 5):
-                if lmList[tipIds[id]][2] < lmList[tipIds[id] - 2][2]:
-                    fingers.append(1)
+                if (updir):
+                    if lmList[tipIds[id]][y] < lmList[tipIds[id] - 2][y]:
+                        fingers.append(1)
+                    else:
+                        fingers.append(0)
                 else:
-                    fingers.append(0)
+                    if lmList[tipIds[id]][y] > lmList[tipIds[id] - 2][y]:
+                        fingers.append(1)
+                    else:
+                        fingers.append(0)
 
             print(fingers)
             totalFingers = fingers.count(1)
