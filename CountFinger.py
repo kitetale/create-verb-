@@ -2,6 +2,7 @@ import cv2
 import time
 import os
 from HandTracking import * 
+from datetime import datetime
 
 wCam, hCam = 640, 480
 
@@ -9,16 +10,10 @@ cap = cv2.VideoCapture(0)
 cap.set(3, wCam)
 cap.set(4, hCam)
 
-# folderPath = "FingerImages"
-# myList = os.listdir(folderPath)
-# print(myList)
-# overlayList = []
-# for imPath in myList:
-#     image = cv2.imread(f'{folderPath}/{imPath}')
-#     # print(f'{folderPath}/{imPath}')
-#     overlayList.append(image)
+elapsed = 0
+startTime = datetime.now()
+secondsElapsed = 0
 
-# print(len(overlayList))
 pTime = 0
 
 detector = handDetector(detectionCon=0.75)
@@ -26,6 +21,12 @@ detector = handDetector(detectionCon=0.75)
 tipIds = [4, 8, 12, 16, 20]
 
 while True:
+    elapsed = (datetime.now() - startTime).total_seconds()
+    if (elapsed//1 != secondsElapsed): 
+        secondsElapsed = elapsed//1
+        print(secondsElapsed)
+    
+
     success, img = cap.read()
     img = cv2.flip(img,1)
     img = detector.findHands(img)
@@ -37,13 +38,9 @@ while True:
 
     for handindex in range(length) :
         lmList = detector.findPosition(img, handNo=handindex, draw=False)
-        print("hand #"+str(handindex) + " : ")
-        #print(lmList)
+
         if len(lmList) != 0:
             fingers = []
-
-            #which hand
-            print(detector.results.multi_handedness[handindex].classification[0].label)
 
             # rotation of hand (0/180 or 90/-90)
             x = 1
@@ -53,9 +50,6 @@ while True:
             if (distx < disty):
                 x = 2
                 y = 1
-                print("rotated 90")
-            else:
-                print("not rotated")
 
             # horizontal orientation of hand 
             rightHand = False
@@ -90,9 +84,7 @@ while True:
                     else:
                         fingers.append(0)
 
-            print(fingers)
             totalFingers = fingers.count(1)
-            print(totalFingers)
 
             # h, w, c = overlayList[totalFingers - 1].shape
             # img[0:h, 0:w] = overlayList[totalFingers - 1]
@@ -102,6 +94,7 @@ while True:
 
     cTime = time.time()
     fps = 1 / (cTime - pTime)
+    
     pTime = cTime
 
     cv2.putText(img, f'FPS: {int(fps)}', (400, 70), cv2.FONT_HERSHEY_PLAIN,
