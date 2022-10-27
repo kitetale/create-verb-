@@ -13,6 +13,8 @@ cap.set(4, hCam)
 elapsed = 0
 startTime = datetime.now()
 secondsElapsed = 0
+halfSeconds = 0
+newTime = False
 
 pTime = 0
 
@@ -20,12 +22,18 @@ detector = handDetector(detectionCon=0.75)
 
 tipIds = [4, 8, 12, 16, 20]
 
+handPath = []
+
 while True:
+    #Update Second / halfsecond increment
     elapsed = (datetime.now() - startTime).total_seconds()
     if (elapsed//1 != secondsElapsed): 
         secondsElapsed = elapsed//1
-        print(secondsElapsed)
-    
+        # print(secondsElapsed)
+    if (halfSeconds!=(((elapsed*10)//1)/10) and ((elapsed*10)//1)%5 == 0):
+        halfSeconds = ((elapsed*10)//1)/10
+        print(halfSeconds)
+        newTime = True
 
     success, img = cap.read()
     img = cv2.flip(img,1)
@@ -86,12 +94,20 @@ while True:
 
             totalFingers = fingers.count(1)
 
+            # get location of thumb root into hand path array
+            if (len(handPath) > 10): handPath = handPath[1:]
+            if (lmList != [] and halfSeconds == ((elapsed*10)//1)/10 and newTime):
+                handPath.append((lmList[2][x],lmList[2][y]))
+                print(handPath)
+                newTime = False
+            
             # h, w, c = overlayList[totalFingers - 1].shape
             # img[0:h, 0:w] = overlayList[totalFingers - 1]
 
             cv2.putText(img, str(totalFingers), (15+handindex*70, 100), cv2.FONT_HERSHEY_PLAIN,
                         5, (255, 0, 0), 10)
 
+    #Update FPS
     cTime = time.time()
     fps = 1 / (cTime - pTime)
     
