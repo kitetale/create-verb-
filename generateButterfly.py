@@ -25,10 +25,12 @@ creation.select_set(True, view_layer=scene.view_layers[0])
 bpy.ops.object.make_links_data(type='MODIFIERS')
 bpy.ops.object.select_all(action='DESELECT')
 
+#deleting instance:
+# bpy.data.objects.remove( bpy.data.objects['Butterfly.000'],do_unlink=True)
 
 #location list from hand track program, passing along[TODO]
 # handPath = []
-handPath = [(332, 500, 0), (555, 395, 0), (512, 252, 0), (303, 188, 0), (245, 192, 0), (384, 189, 0), (461, 259, 0), (418, 468, 0), (560, 357, 0), (536, 214, 0), (488, 248, 0)]
+handPath = [(33.2, 50.0, 0), (55.5, 39.5, 0), (51.2, 25.2, 0), (30.3, 18.8, 0), (24.5, 19.2, 0), (38.4, 18.9, 0), (46.1, 25.9, 0), (41.8, 46.8, 0), (56.0, 35.7, 0), (53.6, 21.4, 0), (48.8, 24.8, 0)]
 
 # Loop through locations list.
 pathLen = len(handPath)
@@ -41,21 +43,21 @@ for i in i_range:
     scene.frame_set(key_frame)
 
     # Update location for that frame.
-    butterfly.location = handPath[i]
-    butterfly.keyframe_insert(data_path='location')
+    creation.location = handPath[i]
+    creation.keyframe_insert(data_path='location')
 
 # Cache shortcut to f-curves.
-fcurves = butterfly.animation_data.action.fcurves
+fcurves = creation.animation_data.action.fcurves
 for fcurve in fcurves:
     for key_frame in fcurve.keyframe_points:
 
         # Set interpolation and easing type.
-        key_frame.interpolation = 'LINEAR'
+        key_frame.interpolation = 'BEZIER'
         key_frame.easing = 'AUTO'
 
         # Options: ['FREE', 'VECTOR', 'ALIGNED', 'AUTO', 'AUTO_CLAMPED']
-        key_frame.handle_left_type = 'AUTO'
-        key_frame.handle_right_type = 'AUTO'
+        key_frame.handle_left_type = 'FREE'
+        key_frame.handle_right_type = 'FREE'
 
 
 # Return to starting frame.
