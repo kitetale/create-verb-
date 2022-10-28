@@ -1,10 +1,14 @@
-from bpy import context, data, ops
+# reference : https://behreajj.medium.com/scripting-curves-in-blender-with-python-c487097efd13
+# @kitetale 
+# 10.28.2022 ExCap Project 2 Blender python
+
 import bpy
 
 # Cache shortcuts to start and end of scene.
-scene = context.scene
-frame_start = scene.frame_start
-frame_end = scene.frame_end
+scene = bpy.context.scene
+frame_start = bpy.context.scene.frame_start
+frame_end = bpy.context.scene.frame_end
+frame_mid = frame_start + ((frame_end - frame_start)//2)
 
 # Create cube.
 # ops.mesh.primitive_cube_add(radius=1.0, location=(0.0, 0.0, 0.0))
@@ -36,14 +40,26 @@ handPath = [(33.2, 50.0, 0), (55.5, 39.5, 0), (51.2, 25.2, 0), (30.3, 18.8, 0), 
 pathLen = len(handPath)
 i_to_percent = 1.0 / (pathLen - 1)
 i_range = range(0, pathLen, 1)
+
+# follow path in order
 for i in i_range:
     # Convert place in locations list to appropriate frame.
     i_percent = i * i_to_percent
-    key_frame = int(frame_start * (1.0 - i_percent) + frame_end * i_percent)
+    key_frame = int(frame_start * (1.0 - i_percent) + frame_mid * i_percent)
     scene.frame_set(key_frame)
 
     # Update location for that frame.
     creation.location = handPath[i]
+    creation.keyframe_insert(data_path='location')
+
+# reverse the path to allow loop to happen
+for i in i_range:
+    i_percent = i * i_to_percent
+    key_frame = int(frame_mid * (1.0 - i_percent) + frame_end * i_percent)
+    scene.frame_set(key_frame)
+
+    # Update location for that frame.
+    creation.location = handPath[pathLen-1-i]
     creation.keyframe_insert(data_path='location')
 
 # Cache shortcut to f-curves.
