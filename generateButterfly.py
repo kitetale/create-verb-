@@ -14,9 +14,26 @@ frame_mid = frame_start + ((frame_end - frame_start)//2)
 # ops.mesh.primitive_cube_add(radius=1.0, location=(0.0, 0.0, 0.0))
 # cube = context.active_object
 
+# number of objects in scene: use to offset location later
+butterflyNum = len(bpy.context.collection.objects)
+offset = 60
+
+# manage maximum number of butterflies on screen
+maxNum = 5
+if (butterflyNum > maxNum) : 
+    removingNum =  int(bpy.context.collection.objects[1].name[10:13])
+    bpy.data.objects.remove( bpy.data.objects[1],do_unlink=True)
+    butterflyNum = removingNum % (maxNum)
+
+#offset info
+offsetPos = offset * butterflyNum
+col = 5
+widthLimit = offset * col
+
+
 # Create Butterfly
 butterfly = bpy.data.objects['Butterfly'] # mesh data input
-creation = bpy.data.objects.new('Butterfly.001',butterfly.data) #instance
+creation = bpy.data.objects.new('Butterfly',butterfly.data) #instance
 
 # add instance to scene
 bpy.context.collection.objects.link(creation)
@@ -48,8 +65,10 @@ for i in i_range:
     key_frame = int(frame_start * (1.0 - i_percent) + frame_mid * i_percent)
     scene.frame_set(key_frame)
 
-    # Update location for that frame.
-    creation.location = handPath[i]
+    # Update location for that frame. [TODO]
+    offsetY = 0
+    offsetX = 0
+    creation.location = (handPath[i][0]+offsetX,handPath[i][1]+offsetY,0)
     creation.keyframe_insert(data_path='location')
 
 # reverse the path to allow loop to happen
@@ -58,8 +77,10 @@ for i in i_range:
     key_frame = int(frame_mid * (1.0 - i_percent) + frame_end * i_percent)
     scene.frame_set(key_frame)
 
-    # Update location for that frame.
-    creation.location = handPath[pathLen-1-i]
+    # Update location for that frame. [TODO]
+    offsetY = 0
+    offsetX = 0
+    creation.location = (handPath[pathLen-1-i][0]+offsetX,handPath[pathLen-1-i][1]+offsetY,0)
     creation.keyframe_insert(data_path='location')
 
 # Cache shortcut to f-curves.
