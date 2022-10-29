@@ -43,7 +43,7 @@ updated = False
 def prepareScript (handPath):
     script1 = os.getcwd() + "/Script1.py"
     fd1 = open(script1,'w')
-    fd1.write("generateButterfly("+str(handPath)+")")
+    fd1.write("def make (generateButterfly): \n \t generateButterfly("+str(handPath)+")")
     print("updated script1! ")
     fd1.close()
 

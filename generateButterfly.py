@@ -8,8 +8,7 @@ import sys
 from datetime import datetime
 
 # [input] handPath : list of xyz coord of butterfly path
-# [input] count : number of total butterflies generated so far
-def generateButterfly(handPath, count):
+def generateButterfly(handPath):
     # Cache shortcuts to start and end of scene.
     scene = bpy.context.scene
     frame_start = bpy.context.scene.frame_start
@@ -121,16 +120,16 @@ script2 = dir + "/script2.py"
 import filecmp
 if (not filecmp.cmp(script1,script2)):
     # files are different, execute script1
-    import Script1 
+    import Script1 as sc1
+    sc1.make(generateButterfly)
     print("writing to script2...")
     fd1 = open(script1,'r')
-    fd2 = open(script2,'a')
+    fd2 = open(script2,'w')
     line = fd1.read()
     fd2.write(line)
     fd1.close()
     fd2.close()
-    print("finished copying, importing script2")
-    import Script2
+    print("finished copying")
 else :
     print("scripts are the same.")
 
