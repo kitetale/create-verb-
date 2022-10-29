@@ -32,7 +32,7 @@ def generateButterfly(handPathNum):
     offset = 60
 
     # manage maximum number of butterflies on screen
-    maxNum = num+1
+    maxNum = num+5
     if (butterflyNum > maxNum) : 
         return
 
@@ -41,10 +41,12 @@ def generateButterfly(handPathNum):
     col = 5
     widthLimit = offset * col
 
-
+    #randomize selection
+    import random
+    butterflyOptions = [bpy.data.objects['Butterfly'],bpy.data.objects['Butterfly1'],bpy.data.objects['Butterfly2'],bpy.data.objects['Butterfly3'],bpy.data.objects['Butterfly4']]
+    butterfly = random.choice(butterflyOptions)
     # Create Butterfly
-    butterfly = bpy.data.objects['Butterfly'] # mesh data input
-    creation = bpy.data.objects.new('Butterfly',butterfly.data) #instance
+    creation = bpy.data.objects.new('MadeButterfly',butterfly.data) #instance
 
     # add instance to scene
     bpy.context.collection.objects.link(creation)
