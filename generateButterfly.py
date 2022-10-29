@@ -7,8 +7,16 @@ import os
 import sys
 from datetime import datetime
 
+changed = True
+
 # [input] handPath : list of xyz coord of butterfly path
-def generateButterfly(handPath):
+def generateButterfly(handPathNum):
+    num = handPathNum[0][0]
+    handPath = handPathNum[1:]
+    
+    global changed
+    if (changed): return
+    changed = True
     # Cache shortcuts to start and end of scene.
     scene = bpy.context.scene
     frame_start = bpy.context.scene.frame_start
@@ -24,11 +32,9 @@ def generateButterfly(handPath):
     offset = 60
 
     # manage maximum number of butterflies on screen
-    maxNum = 100
+    maxNum = num+1
     if (butterflyNum > maxNum) : 
-        removingNum =  int(bpy.context.collection.objects[1].name[10:13])
-        bpy.data.objects.remove( bpy.data.objects[1],do_unlink=True)
-        butterflyNum = removingNum % (maxNum)
+        return
 
     #offset info
     offsetPos = offset * butterflyNum
@@ -106,30 +112,23 @@ def generateButterfly(handPath):
 
 ############################## generateButterfly() def #########################
 
-# path to current blender file
-dir = os.path.dirname(bpy.data.filepath)
-if not dir in sys.path:
-    sys.path.append(dir)
+def run_script(scene):
+    global changed
+    if ((scene.frame_current == scene.frame_start) and not changed):
+        # script1 path
+        script1 = "/Users/ashk/Desktop/ExCap/hand_detect/script1.py"
+       
+        # files are different, execute script1
+        import importlib
+        import Script1 as sc1
+        importlib.reload(sc1)
 
-# script1 path
-script1 = dir + "/script1.py"
-# script2 path
-script2 = dir + "/script2.py"
+        sc1.make(generateButterfly)
+        changed = True
+    else :
+        changed = False
 
-#compare scripts
-import filecmp
-if (not filecmp.cmp(script1,script2)):
-    # files are different, execute script1
-    import Script1 as sc1
-    sc1.make(generateButterfly)
-    print("writing to script2...")
-    fd1 = open(script1,'r')
-    fd2 = open(script2,'w')
-    line = fd1.read()
-    fd2.write(line)
-    fd1.close()
-    fd2.close()
-    print("finished copying")
-else :
-    print("scripts are the same.")
+bpy.app.handlers.frame_change_pre.clear()
+bpy.app.handlers.frame_change_post.clear()
+bpy.app.handlers.frame_change_pre.append(run_script)
 
