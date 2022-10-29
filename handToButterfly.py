@@ -40,7 +40,7 @@ def generateButterfly(handPath, count):
     offset = 60
 
     # manage maximum number of butterflies on screen
-    maxNum = 5
+    maxNum = 100
     if (butterflyNum > maxNum) : 
         removingNum =  int(bpy.context.collection.objects[1].name[10:13])
         bpy.data.objects.remove( bpy.data.objects[1],do_unlink=True)
@@ -141,6 +141,8 @@ detector = handDetector(detectionCon=0.75)
 
 tipIds = [4, 8, 12, 16, 20]
 
+captureNew = True
+
 handPath = []
 collectPath = True
 
@@ -150,7 +152,7 @@ totalCount = 0
 
 
 ############################## opencv loop ####################################
-while True:
+while captureNew:
     #Update Second / halfsecond increment
     elapsed = (datetime.now() - startTime).total_seconds()
     if (elapsed//1 != secondsElapsed): 
@@ -240,6 +242,7 @@ while True:
                 collectPath = True
                 ready = False
                 handPath = []
+                captureNew = False
 
             # h, w, c = overlayList[totalFingers - 1].shape
             # img[0:h, 0:w] = overlayList[totalFingers - 1]
