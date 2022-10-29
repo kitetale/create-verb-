@@ -47,6 +47,11 @@ def prepareScript (handPath):
     print("updated script1! ")
     fd1.close()
 
+    script2 = os.getcwd() + "/Script2.py"
+    fd2 = open(script2,'w')
+    fd2.write('T')
+    fd2.close()
+
     
     
 
@@ -152,12 +157,13 @@ while True:
                     ready = True
                 # once ready, open hand to generate
                 if (ready and totalFingers==5):
-                    totalCount += 1
-                    prepareScript(handPath)
+                    handPathNum = [(totalCount,1)]+handPath
+                    prepareScript(handPathNum)
                     pause = halfSeconds
                     ready = False
                     updated = False
                     handPath = []
+                    totalCount += 1
 
                 # h, w, c = overlayList[totalFingers - 1].shape
                 # img[0:h, 0:w] = overlayList[totalFingers - 1]
