@@ -26,13 +26,15 @@ class handDetector():
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.hands.process(imgRGB)
         # print(results.multi_hand_landmarks)
+        	
+        (thresh, img1) = cv2.threshold(img, 255, 255, cv2.THRESH_BINARY)
 
         if self.results.multi_hand_landmarks:
             for handLms in self.results.multi_hand_landmarks:
                 if draw:
-                    self.mpDraw.draw_landmarks(img, handLms,
+                    self.mpDraw.draw_landmarks(img1, handLms,
                                                self.mpHands.HAND_CONNECTIONS)
-        return img
+        return img1
 
     def findPosition(self, img, handNo=0, draw=True):
 
